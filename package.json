@@ -1,0 +1,45 @@
+{
+  "name": "react18",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "loader-utils": "3.2.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-scripts": "5.0.1",
+    "@babylonjs/addons": "8.32.3",
+    "@babylonjs/core": "8.32.3",
+    "@babylonjs/inspector": "8.32.3-preview",
+    "@babylonjs/loaders": "8.32.3",
+    "@babylonjs/materials": "8.32.3",
+    "@babylonjs/serializers": "8.32.3",
+    "@fluentui/react-icons": "2.0.310",
+    "@fluentui/react-components": "9.68.3",
+    "@fluentui-contrib/react-virtualizer": "0.1.0",
+    "@fluentui-contrib/react-resize-handle": "0.8.0",
+    "usehooks-ts": "3.1.1",
+    "echarts": "5.6.0",
+    "echarts-for-react": "3.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.22",
+    "globals": "^16.4.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.45.0",
+    "vite": "^7.1.7"
+  }
+}
