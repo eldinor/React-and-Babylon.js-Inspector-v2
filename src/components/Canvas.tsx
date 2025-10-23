@@ -12,6 +12,7 @@ import {
 import "@babylonjs/loaders";
 import { ShowInspector } from "@babylonjs/inspector";
 import { VertexTreeMapServiceDefinition } from "../services/VertexTreeMapService";
+import { MemoryCounterServiceDefinition } from "../services/MemoryCounterToolbarService";
 import { COLORS } from "../constants/layout";
 
 export function Canvas() {
@@ -25,7 +26,7 @@ export function Canvas() {
 
     // Create scene
     const scene = new Scene(engine);
-    scene.clearColor.set(0.1, 0.1, 0.1, 1);
+   // scene.clearColor.set(0.1, 0.1, 0.1, 1);
 
     // Create default camera and light
     const camera = new ArcRotateCamera(
@@ -62,9 +63,9 @@ export function Canvas() {
       setTimeout(
         () =>
          
-          ShowInspector(scene, {
-            serviceDefinitions: [VertexTreeMapServiceDefinition],
-          }),
+         ShowInspector(scene, {embedMode:false, enableClose:true, overlay:true,
+            serviceDefinitions: [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition],
+         }),
         1000
       );
     })();
@@ -95,8 +96,11 @@ export function Canvas() {
       style={{
         display: "block",
         width: "100%",
-        height: "calc(100vh - 160px)",
+        height: "calc(100vh - 150px)",
         backgroundColor: COLORS.canvas,
+        margin: 0,
+        padding: 0,
+        outline:"none"
       }}
     />
   );

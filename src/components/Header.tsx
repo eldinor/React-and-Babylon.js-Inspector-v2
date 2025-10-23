@@ -11,6 +11,8 @@ export function Header() {
         alignItems: "center",
         paddingLeft: 16,
         paddingRight: 16,
+        boxSizing: "border-box",
+        margin: 0,
       }}
     >
       <h1
@@ -21,7 +23,7 @@ export function Header() {
           color: COLORS.text,
         }}
       >
-        React 18 Inspector
+        React 18 Inspector v2
       </h1>
     </header>
   );

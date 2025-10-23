@@ -5,7 +5,7 @@ import { Footer } from "./components/Footer";
 // Main App component
 function App() {
   return (
-    <div className="App">
+    <div className="App"  style={{overflow:"hidden", height:"100vh"}}>
       <Header />
       <Canvas />
       <Footer />

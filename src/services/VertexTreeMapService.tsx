@@ -33,7 +33,10 @@ export const VertexTreeMapServiceDefinition: ServiceDefinition<[], [IShellServic
               return {
                 name: mesh.name,
                 value: mesh.getTotalVertices(),
-                mesh: mesh.uniqueId,
+                itemStyle: {
+                  borderColor: "#00000000",
+                },
+                uniqueId: mesh.uniqueId,
               };
             });
         }, [meshes]);
@@ -67,13 +70,19 @@ export const VertexTreeMapServiceDefinition: ServiceDefinition<[], [IShellServic
         };
 
         return (
-          <div style={{ display: "flex", flex: 1, padding: "8px" }}>
+          <div style={{ display: "flex", flex: 1, padding: "12px" }}>
             <ReactECharts
               option={option}
               style={{ height: "100%", width: "100%" }}
               onEvents={{
-                click: (params: Record<string, unknown>) =>
-                  (selectionService.selectedEntity = scene.getMeshByUniqueId(params.data as number)),
+                click: (params: Record<string, unknown>) => {
+                  const data = params.data as Record<string, unknown>;
+                  const uniqueId = data.uniqueId as number;
+                  const mesh = scene.getMeshByUniqueId(uniqueId);
+                  if (mesh) {
+                    selectionService.selectedEntity = mesh;
+                  }
+                },
               }}
             />
           </div>

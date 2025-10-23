@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer
       style={{
-        height: 100,
+        height: 90,
         backgroundColor: COLORS.header,
         borderTop: `1px solid ${COLORS.border}`,
         display: "flex",
@@ -13,12 +13,12 @@ export function Footer() {
         paddingRight: 16,
         fontSize: 12,
         color: COLORS.textSecondary,
+        boxSizing: "border-box",
+        margin: 0,
       }}
     >
       <div style={{ display: "flex", gap: 24 }}>
         <span>Ready</span>
-        <span>FPS: 60</span>
-        <span>Objects: 3</span>
       </div>
     </footer>
   );
