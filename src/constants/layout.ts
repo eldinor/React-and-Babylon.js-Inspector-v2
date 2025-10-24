@@ -1,5 +1,5 @@
 // Layout constants
-export const HEADER_HEIGHT = 60;
+export const HEADER_HEIGHT = 40;
 export const SIDEBAR_WIDTH = 250;
 
 // Colors
@@ -9,6 +9,5 @@ export const COLORS = {
   canvas: "#1a1a1a",
   border: "#3e3e42",
   text: "#cccccc",
-  textSecondary: "#858585",
+  textSecondary: "#ceccccff",
 };
-
