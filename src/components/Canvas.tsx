@@ -10,14 +10,18 @@ import {
   Tools,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
-import { ShowInspector } from "@babylonjs/inspector";
+import { ShowInspector, HideInspector } from "@babylonjs/inspector";
 import { VertexTreeMapServiceDefinition } from "../services/VertexTreeMapService";
 import { MemoryCounterServiceDefinition } from "../services/MemoryCounterToolbarService";
 import { COLORS } from "../constants/layout";
+import { useServiceDefinitions } from "../context/ServiceDefinitionsContext";
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sceneRef = useRef<Scene | null>(null);
+  const { services } = useServiceDefinitions();
 
+  // Initialize scene only once
   useEffect(() => {
     if (!canvasRef.current) return;
 
@@ -26,6 +30,7 @@ export function Canvas() {
 
     // Create scene
     const scene = new Scene(engine);
+    sceneRef.current = scene;
    // scene.clearColor.set(0.1, 0.1, 0.1, 1);
 
     // Create default camera and light
@@ -59,15 +64,6 @@ export function Canvas() {
       const assetContainer = await LoadAssetContainerAsync(testAsset, scene);
       assetContainer.addAllToScene();
       assetContainer.meshes[0].position.y = 1;
-
-      setTimeout(
-        () =>
-         
-         ShowInspector(scene, {embedMode:false, enableClose:true, overlay:true,
-            serviceDefinitions: [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition],
-         }),
-        1000
-      );
     })();
 
     // Render loop
@@ -89,6 +85,31 @@ export function Canvas() {
     };
   }, []);
 
+  // Update Inspector when services change
+  useEffect(() => {
+    if (!sceneRef.current) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const enabledServices: any[] = [];
+    if (services.find((s) => s.name === "VertexTreeMap")?.enabled) {
+      enabledServices.push(VertexTreeMapServiceDefinition);
+    }
+    if (services.find((s) => s.name === "MemoryCounter")?.enabled) {
+      enabledServices.push(MemoryCounterServiceDefinition);
+    }
+
+    // Defer Inspector update to avoid race condition during render
+    setTimeout(() => {
+      HideInspector();
+      ShowInspector(sceneRef.current!, {
+        embedMode: false,
+        enableClose: true,
+        overlay: true,
+        serviceDefinitions: enabledServices,
+      });
+    }, 0);
+  }, [services]);
+
   return (
     <canvas
       ref={canvasRef}
@@ -96,7 +117,7 @@ export function Canvas() {
       style={{
         display: "block",
         width: "100%",
-        height: "calc(100vh - 150px)",
+        height: "calc(100vh - 130px)",
         backgroundColor: COLORS.canvas,
         margin: 0,
         padding: 0,

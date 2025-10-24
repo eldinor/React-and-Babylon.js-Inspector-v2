@@ -1,4 +1,4 @@
-import { Scene, type ServiceDefinition } from "@babylonjs/core";
+import { Scene,  } from "@babylonjs/core";
 import {
   ShellServiceIdentity,
   type IShellService,
@@ -7,11 +7,12 @@ import {
   type ISelectionService,
   SelectionServiceIdentity,
   useObservableState,
+  type ServiceDefinition
 } from "@babylonjs/inspector";
-import { type FunctionComponent, useCallback, useMemo, ReactNode } from "react";
+import { type FunctionComponent, useCallback, useMemo } from "react";
 import { DataTreemapRegular } from "@fluentui/react-icons";
 import ReactECharts from "echarts-for-react";
-import React from "react";
+
 
 export const VertexTreeMapServiceDefinition: ServiceDefinition<[], [IShellService, ISceneContext, ISelectionService]> =
   {

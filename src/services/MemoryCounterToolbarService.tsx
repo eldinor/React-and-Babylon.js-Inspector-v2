@@ -1,16 +1,14 @@
-import { Scene, type ServiceDefinition } from "@babylonjs/core";
+import { Scene } from "@babylonjs/core";
 import {
   ShellServiceIdentity,
-  type IShellService,
+  IShellService,
   SceneContextIdentity,
-  type ISceneContext,
-  type ISelectionService,
-  SelectionServiceIdentity,
+  ISceneContext,
+  ServiceDefinition,
   useObservableState,
 } from "@babylonjs/inspector";
-import { type FunctionComponent, useCallback,  } from "react";
+import { type FunctionComponent, useState, useEffect } from "react";
 import { Badge } from "@fluentui/react-components";
-
 
 export // First we need to configure a ServiceDefinition.
 const MemoryCounterServiceDefinition: ServiceDefinition<
@@ -26,53 +24,62 @@ const MemoryCounterServiceDefinition: ServiceDefinition<
   // This factory function creates the instance of the service.
   // It is effectively called when ShowInspector is called.
   factory: (shellService: IShellService, sceneContext: ISceneContext) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const MemoryCounter: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
+      const [memoryUsage, setMemoryUsage] = useState<{ bytes: number; source: string }>({
+        bytes: 0,
+        source: "unavailable",
+      });
+
       const getMemoryUsage = () => {
         if ("memory" in performance) {
           return {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             bytes: (performance as any).memory.usedJSHeapSize,
             source: "legacy",
-            breakdown: [],
           };
         }
         // No memory data available
         return {
           bytes: 0,
           source: "unavailable",
-          breakdown: [],
         };
       };
+
+      // Poll memory usage every 500ms
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setMemoryUsage(getMemoryUsage());
+        }, 500);
+
+        return () => clearInterval(interval);
+      }, []);
 
       return (
         <Badge
           style={{ alignSelf: "center" }}
           size="medium"
           appearance="tint"
-          color={
-            getMemoryUsage().source == "unavailable" ? "danger" : "success"
-          }
+          color={memoryUsage.source == "unavailable" ? "danger" : "success"}
         >
-          {"Memory: " +
-            (Math.round(getMemoryUsage().bytes / 1024) / 1024).toFixed(0) +
-            " Mb"}
+          {"Memory: " + (Math.round(memoryUsage.bytes / 1024) / 1024).toFixed(0) + " Mb"}
         </Badge>
       );
+    };
+
+    const MemoryCounterContainer: FunctionComponent = () => {
+      // Create a scene state that updates whenever the current scene updates.
+      const scene = useObservableState(() => sceneContext.currentScene, sceneContext.currentSceneObservable);
+      // Render the MemoryCounter, but only if we have a current scene.
+      return scene ? <MemoryCounter scene={scene} /> : null;
     };
 
     const toolbarItemRegistration = shellService.addToolbarItem({
       key: "Memory Counter",
       horizontalLocation: "left",
       verticalLocation: "bottom",
-      // This is the React component that will be rendered in the side pane.
-      component: () => {
-        // Create a scene state that updates whenever the current scene updates.
-        const scene = useObservableState(
-          () => sceneContext.currentScene,
-          sceneContext.currentSceneObservable
-        );
-        // Render the MemoryCounter, but only if we have a current scene.
-        return scene ? <MemoryCounter scene={scene} /> : null;
-      },
+      // This is the React component that will be rendered in the toolbar.
+      component: MemoryCounterContainer,
     });
 
     return toolbarItemRegistration;
