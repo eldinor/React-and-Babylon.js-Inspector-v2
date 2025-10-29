@@ -23,7 +23,7 @@ export function Header() {
           color: COLORS.text,
         }}
       >
-        React 18 Inspector v2
+        React 19 Inspector v2
       </h1>
     </header>
   );
