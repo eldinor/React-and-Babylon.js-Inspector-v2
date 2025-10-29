@@ -19,12 +19,6 @@
     "@babylonjs/loaders": "8.33.3",
     "@babylonjs/materials": "8.33.3",
     "@babylonjs/serializers": "8.33.3",
-    "@fluentui/react-icons": "2.0.310",
-    "@fluentui/react-components": "9.68.3",
-    "@fluentui-contrib/react-virtualizer": "0.1.0",
-    "@fluentui-contrib/react-resize-handle": "0.8.0",
-    "usehooks-ts": "3.1.1",
-    "echarts": "5.6.0",
     "echarts-for-react": "3.0.2"
   },
   "devDependencies": {
