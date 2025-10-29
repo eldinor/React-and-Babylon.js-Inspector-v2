@@ -10,11 +10,12 @@ import {
   Tools,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
-import { ShowInspector, HideInspector } from "@babylonjs/inspector";
+import { ShowInspector, HideInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
 import { VertexTreeMapServiceDefinition } from "../services/VertexTreeMapService";
 import { MemoryCounterServiceDefinition } from "../services/MemoryCounterToolbarService";
 import { COLORS } from "../constants/layout";
 import { useServiceDefinitions } from "../context/ServiceDefinitionsContext";
+import { GraphicsBudgetServiceDefinition } from "../services/graphicsBudgetService";
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -98,6 +99,8 @@ export function Canvas() {
       enabledServices.push(MemoryCounterServiceDefinition);
     }
 
+enabledServices.push(GraphicsBudgetServiceDefinition);
+
     // Defer Inspector update to avoid race condition during render
     setTimeout(() => {
       HideInspector();
@@ -106,8 +109,20 @@ export function Canvas() {
         enableClose: true,
         overlay: true,
         serviceDefinitions: enabledServices,
+              extensionFeeds: [
+        new BuiltInsExtensionFeed("Test Feed", [
+          {
+            name: "Graphics Budget",
+            description:
+              "Provides graphics budget settings and UI to surface warnings when the thresholds are exceeded.",
+            keywords: ["graphics", "budget"],
+            getExtensionModuleAsync: async () =>
+              import("../services/graphicsBudgetService"),
+          },
+        ]),
+      ],
       });
-    }, 0);
+    }, 100);
   }, [services]);
 
   return (
