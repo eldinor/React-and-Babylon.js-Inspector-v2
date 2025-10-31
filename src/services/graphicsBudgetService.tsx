@@ -24,7 +24,7 @@ export const GraphicsBudgetServiceIdentity = Symbol("GraphicsBudgetService");
 // This is the service contract (interface) for the "Graphics Service."
 // It defines the functionality available to other services that consume it.
 export interface IGraphicsBudgetService
-  extends IService<typeof SettingsServiceIdentity> {
+  extends IService<typeof GraphicsBudgetServiceIdentity> {
   readonly changedObservable: Observable<void>;
   readonly drawCallWarningThreshold: number;
   readonly drawCallDangerThreshold: number;
@@ -41,7 +41,7 @@ export const GraphicsBudgetServiceDefinition: ServiceDefinition<
 > = {
   friendlyName: "Graphics Budget Settings",
   consumes: [SettingsServiceIdentity],
-  produces: [GraphicsBudgetServiceIdentity as unknown as typeof SettingsServiceIdentity],
+  produces: [GraphicsBudgetServiceIdentity],
   factory: (settingsService) => {
     // Some default values (you could imagine storing these in localStorage).
     let _drawCallWarningThreshold = 50;
@@ -126,7 +126,7 @@ export const DrawCallsServiceDefinition: ServiceDefinition<
   consumes: [
     ShellServiceIdentity,
     SceneContextIdentity,
-    GraphicsBudgetServiceIdentity as unknown as typeof SettingsServiceIdentity,
+    GraphicsBudgetServiceIdentity,
   ],
   // This factory function creates the instance of the service.
   // It is effectively called when ShowInspector is called.
