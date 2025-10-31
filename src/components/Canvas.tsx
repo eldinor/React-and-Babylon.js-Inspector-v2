@@ -99,7 +99,7 @@ export function Canvas() {
       enabledServices.push(MemoryCounterServiceDefinition);
     }
 
-enabledServices.push(GraphicsBudgetServiceDefinition);
+// enabledServices.push(GraphicsBudgetServiceDefinition);
 
     // Defer Inspector update to avoid race condition during render
     setTimeout(() => {
