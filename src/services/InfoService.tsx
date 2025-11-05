@@ -11,15 +11,15 @@ import {
 } from "@babylonjs/inspector";
 import { type FunctionComponent } from "react";
 import { Info16Regular, InfoRegular } from "@fluentui/react-icons";
-import { serviceList } from "../services/ServiceList";
+import { serviceList } from "./ServiceList";
 import { Tooltip } from "@fluentui/react-components";
 import { extensionList } from "./ExtensionList";
-export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, ISceneContext, ISelectionService]> = {
+export const InfoServiceDefinition: ServiceDefinition<[], [IShellService, ISceneContext, ISelectionService]> = {
   friendlyName: "Info",
   consumes: [ShellServiceIdentity, SceneContextIdentity, SelectionServiceIdentity],
   factory: (shellService, sceneContext) => {
     // Define the React component for the mesh vertices treemap
-    const About: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
+    const Info: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
       return (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "12px" }}>
           <h3 style={{ margin: 0 }}>Custom ServiceDefinitions</h3>
@@ -50,7 +50,7 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
 
     const sidePaneRegistration = shellService.addSidePane({
       key: "Info",
-      title: "Inspector v2 Custom Extensions",
+      title: "Inspector v2 Custom Extensions Info",
       order: 400,
       icon: InfoRegular,
       horizontalLocation: "right",
@@ -58,7 +58,7 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
       content: () => {
         const scene = useObservableState(() => sceneContext.currentScene, sceneContext.currentSceneObservable);
 
-        return scene ? <About scene={scene} /> : null;
+        return scene ? <Info scene={scene} /> : null;
       },
     });
 
