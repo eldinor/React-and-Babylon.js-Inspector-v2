@@ -34,6 +34,7 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
       Logger.Log(`Loading GLB file: ${file.name}`);
 
      const container = await LoadAssetContainerAsync(fileURL, scene, { pluginExtension: ".glb" });
+     container.meshes[0].name = file.name.substring(0, file.name.lastIndexOf("."));
      container.addAllToScene()
 
       Logger.Log(`Successfully loaded ${file.name}`);
