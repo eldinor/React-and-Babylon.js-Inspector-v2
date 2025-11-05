@@ -1,7 +1,7 @@
 import type { ServiceDefinition } from "@babylonjs/inspector";
 import { ToolsServiceIdentity, SelectionServiceIdentity } from "@babylonjs/inspector";
 import type { IToolsService, ISelectionService } from "@babylonjs/inspector";
-import { ImportGLBTools } from "./ImportGLB.";
+import { ImportGLBTools } from "./ImportGLB";
 
 export const GLBImportServiceDefinition: ServiceDefinition<[], [IToolsService, ISelectionService]> = {
     friendlyName: "Import GLB Tool",

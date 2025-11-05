@@ -7,7 +7,7 @@ import {  LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { Logger } from "@babylonjs/core/Misc/logger";
 import { FileUploadLine,  type ISelectionService,} from "@babylonjs/inspector";
 import { Delete16Regular, Copy16Regular, DocumentCopy16Regular } from "@fluentui/react-icons";
-import { Button } from "@fluentui/react-components";
+import { Button, Tooltip } from "@fluentui/react-components";
 
 interface CloneInstance {
   name: string;
@@ -94,9 +94,10 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
   const handleDisposeAll = () => {
     // Dispose all containers and their clones/instances
     loadedFiles.forEach((file) => {
-      // Dispose all clones and instances
+      // Dispose all clones and instances first
       file.clones.forEach((clone) => {
-        clone.rootNode.dispose();
+        // Dispose the root node and all its children recursively
+        clone.rootNode.dispose(false, true);
         Logger.Log(`Disposed ${clone.type}: ${clone.name}`);
       });
 
@@ -182,7 +183,6 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                       onClick={handleClick}
                       style={{
                         cursor: "pointer",
-                        color: "#0078d4",
                         textDecoration: "underline"
                       }}
                     >
@@ -205,7 +205,7 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                                 onClick={handleCloneClick}
                                 style={{
                                   cursor: "pointer",
-                                  color: clone.type === "clone" ? "#0078d4" : "#107c10",
+                                  color: clone.type === "clone" ? "#b8e007ff" : "#07fc07ff",
                                   textDecoration: "underline"
                                 }}
                               >
@@ -218,33 +218,36 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                     )}
                   </div>
                   <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
-                    <Copy16Regular
-                      onClick={() => handleClone(index)}
-                      title="Clone"
-                      style={{
-                        cursor: "pointer",
-                        color: "#0078d4",
-                        flexShrink: 0
-                      }}
-                    />
-                    <DocumentCopy16Regular
-                      onClick={() => handleInstance(index)}
-                      title="Instance"
-                      style={{
-                        cursor: "pointer",
-                        color: "#107c10",
-                        flexShrink: 0
-                      }}
-                    />
-                    <Delete16Regular
-                      onClick={() => handleDelete(index)}
-                      title="Delete"
-                      style={{
-                        cursor: "pointer",
-                        color: "#d13438",
-                        flexShrink: 0
-                      }}
-                    />
+                    <Tooltip content="Clone" relationship="label">
+                      <Copy16Regular
+                        onClick={() => handleClone(index)}
+                        style={{
+                          cursor: "pointer",
+                          color: "#0078d4",
+                          flexShrink: 0
+                        }}
+                      />
+                    </Tooltip>
+                    <Tooltip content="Instance" relationship="label">
+                      <DocumentCopy16Regular
+                        onClick={() => handleInstance(index)}
+                        style={{
+                          cursor: "pointer",
+                          color: "#107c10",
+                          flexShrink: 0
+                        }}
+                      />
+                    </Tooltip>
+                    <Tooltip content="Delete" relationship="label">
+                      <Delete16Regular
+                        onClick={() => handleDelete(index)}
+                        style={{
+                          cursor: "pointer",
+                          color: "#d13438",
+                          flexShrink: 0
+                        }}
+                      />
+                    </Tooltip>
                   </div>
                 </li>
               );
