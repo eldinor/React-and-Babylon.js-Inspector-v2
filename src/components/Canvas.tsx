@@ -13,11 +13,12 @@ import "@babylonjs/loaders";
 import { ShowInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
 import { VertexTreeMapServiceDefinition } from "../services/VertexTreeMapService";
 import { MemoryCounterServiceDefinition } from "../services/MemoryCounterToolbarService";
+import { AboutServiceDefinition } from "../services/AboutService";
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<Scene | null>(null);
-  const enabledServices = [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition];
+  const enabledServices = [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition, AboutServiceDefinition];
 
   // Initialize scene only once
   useEffect(() => {
@@ -61,6 +62,8 @@ export function Canvas() {
     setTimeout(() => {
       ShowInspector(sceneRef.current!, {
         embedMode: false,
+      //  initialTab: 2,
+     //   showExplorer:false,
         enableClose: true,
         overlay: true,
         serviceDefinitions: enabledServices,
