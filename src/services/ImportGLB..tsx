@@ -2,17 +2,25 @@ import { useState } from "react";
 import type { FunctionComponent } from "react";
 import type { Scene } from "@babylonjs/core/scene";
 import type { AssetContainer } from "@babylonjs/core/assetContainer";
+import type { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import {  LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { Logger } from "@babylonjs/core/Misc/logger";
 import { FileUploadLine,  type ISelectionService,} from "@babylonjs/inspector";
-import { Delete16Regular, Delete24Regular } from "@fluentui/react-icons";
+import { Delete16Regular, Copy16Regular, DocumentCopy16Regular } from "@fluentui/react-icons";
 import { Button } from "@fluentui/react-components";
+
+interface CloneInstance {
+  name: string;
+  rootNode: TransformNode;
+  type: "clone" | "instance";
+}
 
 interface LoadedFile {
   name: string;
   size: number;
   meshName: string;
   container: AssetContainer;
+  clones: CloneInstance[];
 }
 
 export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService: ISelectionService }> = ({ scene, selectionService }) => {
@@ -52,7 +60,7 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
       }
 
       // Add to loaded files list
-      setLoadedFiles((prev) => [...prev, { name: file.name, size: file.size, meshName, container }]);
+      setLoadedFiles((prev) => [...prev, { name: file.name, size: file.size, meshName, container, clones: [] }]);
 
       // Auto-play animations if any
       /*
@@ -84,8 +92,15 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
   };
 
   const handleDisposeAll = () => {
-    // Dispose all containers
+    // Dispose all containers and their clones/instances
     loadedFiles.forEach((file) => {
+      // Dispose all clones and instances
+      file.clones.forEach((clone) => {
+        clone.rootNode.dispose();
+        Logger.Log(`Disposed ${clone.type}: ${clone.name}`);
+      });
+
+      // Dispose the container
       file.container.dispose();
       Logger.Log(`Disposed container: ${file.name}`);
     });
@@ -93,6 +108,54 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
     // Clear the list
     setLoadedFiles([]);
     Logger.Log("All containers disposed");
+  };
+
+  const handleClone = (index: number) => {
+    const file = loadedFiles[index];
+
+    // Clone using instantiateModelsToScene with doNotInstantiate: true
+    const result = file.container.instantiateModelsToScene(undefined, false, { doNotInstantiate: true });
+
+    if (result.rootNodes.length > 0) {
+      const rootNode = result.rootNodes[0] as TransformNode;
+      const cloneName = `${file.meshName}_clone_${file.clones.filter(c => c.type === "clone").length + 1}`;
+      rootNode.name = cloneName;
+
+      // Add to clones list
+      setLoadedFiles((prev) => {
+        const updated = [...prev];
+        updated[index].clones.push({ name: cloneName, rootNode, type: "clone" });
+        return updated;
+      });
+
+      // Select the first root node
+      selectionService.selectedEntity = rootNode;
+      Logger.Log(`Cloned container: ${file.name} as ${cloneName}`);
+    }
+  };
+
+  const handleInstance = (index: number) => {
+    const file = loadedFiles[index];
+
+    // Instance using instantiateModelsToScene with doNotInstantiate: false
+    const result = file.container.instantiateModelsToScene(undefined, false, { doNotInstantiate: false });
+
+    if (result.rootNodes.length > 0) {
+      const rootNode = result.rootNodes[0] as TransformNode;
+      const instanceName = `${file.meshName}_instance_${file.clones.filter(c => c.type === "instance").length + 1}`;
+      rootNode.name = instanceName;
+
+      // Add to clones list
+      setLoadedFiles((prev) => {
+        const updated = [...prev];
+        updated[index].clones.push({ name: instanceName, rootNode, type: "instance" });
+        return updated;
+      });
+
+      // Select the first root node
+      selectionService.selectedEntity = rootNode;
+      Logger.Log(`Instanced container: ${file.name} as ${instanceName}`);
+    }
   };
 
   return (
@@ -128,15 +191,61 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                     <span style={{ fontSize: "11px", color: "#888", marginLeft: "12px" }}>
                       {((file.size/1024)/1024).toFixed(2)+"MB"}
                     </span>
+                    {file.clones.length > 0 && (
+                      <div style={{ marginLeft: "12px", marginTop: "4px" }}>
+                        {file.clones.map((clone, cloneIndex) => {
+                          const handleCloneClick = () => {
+                            selectionService.selectedEntity = clone.rootNode;
+                            Logger.Log(`Selected ${clone.type}: ${clone.name}`);
+                          };
+
+                          return (
+                            <div key={cloneIndex} style={{ fontSize: "11px", marginTop: "2px" }}>
+                              <span
+                                onClick={handleCloneClick}
+                                style={{
+                                  cursor: "pointer",
+                                  color: clone.type === "clone" ? "#0078d4" : "#107c10",
+                                  textDecoration: "underline"
+                                }}
+                              >
+                                ↳ {clone.name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                  <Delete16Regular
-                    onClick={() => handleDelete(index)}
-                    style={{
-                      cursor: "pointer",
-                      color: "#d13438",
-                      flexShrink: 0
-                    }}
-                  />
+                  <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+                    <Copy16Regular
+                      onClick={() => handleClone(index)}
+                      title="Clone"
+                      style={{
+                        cursor: "pointer",
+                        color: "#0078d4",
+                        flexShrink: 0
+                      }}
+                    />
+                    <DocumentCopy16Regular
+                      onClick={() => handleInstance(index)}
+                      title="Instance"
+                      style={{
+                        cursor: "pointer",
+                        color: "#107c10",
+                        flexShrink: 0
+                      }}
+                    />
+                    <Delete16Regular
+                      onClick={() => handleDelete(index)}
+                      title="Delete"
+                      style={{
+                        cursor: "pointer",
+                        color: "#d13438",
+                        flexShrink: 0
+                      }}
+                    />
+                  </div>
                 </li>
               );
             })}
