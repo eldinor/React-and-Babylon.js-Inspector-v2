@@ -22,7 +22,7 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
     const About: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
       return (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "12px" }}>
-          <h3 style={{ margin: 0 }}>Inspector v2 ServiceDefinitions</h3>
+          <h3 style={{ margin: 0 }}>Custom ServiceDefinitions</h3>
           <ul style={{ listStyleType: "none", paddingLeft: 0, marginTop:"4px"}}>
             {serviceList.map((service, index) => (
               <li key={index} style={{ padding: "4px 0", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -33,7 +33,7 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
               </li>
             ))}
           </ul>
-          <h3 style={{ margin: 0 }}>Inspector v2 ExtensionFeeds</h3>
+          <h3 style={{ margin: 0 }}>Custom ExtensionFeeds</h3>
           <ul style={{ listStyleType: "none", paddingLeft: 0 ,marginTop:"4px"}}>
             {extensionList.map((feed, index) => (
               <li key={index} style={{ padding: "4px 0", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -49,8 +49,8 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
     };
 
     const sidePaneRegistration = shellService.addSidePane({
-      key: "About",
-      title: "About",
+      key: "Info",
+      title: "Inspector v2 Custom Extensions",
       order: 400,
       icon: InfoRegular,
       horizontalLocation: "right",
