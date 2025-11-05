@@ -10,16 +10,15 @@ import {
   Tools,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
-import { ShowInspector, HideInspector } from "@babylonjs/inspector";
+import { ShowInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
 import { VertexTreeMapServiceDefinition } from "../services/VertexTreeMapService";
 import { MemoryCounterServiceDefinition } from "../services/MemoryCounterToolbarService";
-import { COLORS } from "../constants/layout";
-import { useServiceDefinitions } from "../context/ServiceDefinitionsContext";
+import { AboutServiceDefinition } from "../services/AboutService";
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<Scene | null>(null);
-  const { services } = useServiceDefinitions();
+  const enabledServices = [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition, AboutServiceDefinition];
 
   // Initialize scene only once
   useEffect(() => {
@@ -31,17 +30,10 @@ export function Canvas() {
     // Create scene
     const scene = new Scene(engine);
     sceneRef.current = scene;
-   // scene.clearColor.set(0.1, 0.1, 0.1, 1);
+    // scene.clearColor.set(0.1, 0.1, 0.1, 1);
 
     // Create default camera and light
-    const camera = new ArcRotateCamera(
-      "camera",
-      Tools.ToRadians(60),
-      Tools.ToRadians(57.3),
-      10,
-      Vector3.Zero(),
-      scene
-    );
+    const camera = new ArcRotateCamera("camera", Tools.ToRadians(60), Tools.ToRadians(57.3), 10, Vector3.Zero(), scene);
     camera.attachControl(canvasRef.current, true);
     camera.setTarget(Vector3.Zero());
     camera.wheelDeltaPercentage = 0.01;
@@ -66,6 +58,29 @@ export function Canvas() {
       assetContainer.meshes[0].position.y = 1;
     })();
 
+    // Defer Inspector update to avoid race condition during render
+    setTimeout(() => {
+      ShowInspector(sceneRef.current!, {
+        embedMode: false,
+      //  initialTab: 2,
+     //   showExplorer:false,
+        enableClose: true,
+        overlay: true,
+        serviceDefinitions: enabledServices,
+        extensionFeeds: [
+          new BuiltInsExtensionFeed("Test Feed", [
+            {
+              name: "Graphics Budget",
+              description:
+                "Provides graphics budget settings and UI to surface warnings when the thresholds are exceeded.",
+              keywords: ["graphics", "budget"],
+              getExtensionModuleAsync: async () => import("../services/graphicsBudgetService"),
+            },
+          ]),
+        ],
+      });
+    }, 100);
+
     // Render loop
     engine.runRenderLoop(() => {
       scene.render();
@@ -83,32 +98,8 @@ export function Canvas() {
       scene.dispose();
       engine.dispose();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Update Inspector when services change
-  useEffect(() => {
-    if (!sceneRef.current) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const enabledServices: any[] = [];
-    if (services.find((s) => s.name === "VertexTreeMap")?.enabled) {
-      enabledServices.push(VertexTreeMapServiceDefinition);
-    }
-    if (services.find((s) => s.name === "MemoryCounter")?.enabled) {
-      enabledServices.push(MemoryCounterServiceDefinition);
-    }
-
-    // Defer Inspector update to avoid race condition during render
-    setTimeout(() => {
-      HideInspector();
-      ShowInspector(sceneRef.current!, {
-        embedMode: false,
-        enableClose: true,
-        overlay: true,
-        serviceDefinitions: enabledServices,
-      });
-    }, 0);
-  }, [services]);
 
   return (
     <canvas
@@ -117,13 +108,11 @@ export function Canvas() {
       style={{
         display: "block",
         width: "100%",
-        height: "calc(100vh - 130px)",
-        backgroundColor: COLORS.canvas,
+        height: "100vh",
         margin: 0,
         padding: 0,
-        outline:"none"
+        outline: "none",
       }}
     />
   );
 }
-
