@@ -11,6 +11,7 @@ import {
 } from "@babylonjs/inspector";
 import { type FunctionComponent} from "react";
 import { InfoRegular } from "@fluentui/react-icons";
+import { serviceList } from "../services/ServiceList";
 
 export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, ISceneContext, ISelectionService]> = {
   friendlyName: "About",
@@ -18,7 +19,12 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
   factory: (shellService, sceneContext) => {
     // Define the React component for the mesh vertices treemap
     const About: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
+
+console.log(serviceList)
+
       return <div style={{ display: "flex", flex: 1, padding: "12px" }}>Inspector v2 Extensions</div>;
+
+
     };
 
     const sidePaneRegistration = shellService.addSidePane({

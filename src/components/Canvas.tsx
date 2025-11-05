@@ -11,14 +11,12 @@ import {
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
 import { ShowInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
-import { VertexTreeMapServiceDefinition } from "../services/VertexTreeMapService";
-import { MemoryCounterServiceDefinition } from "../services/MemoryCounterToolbarService";
-import { AboutServiceDefinition } from "../services/AboutService";
+import { serviceList } from "../services/ServiceList";
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<Scene | null>(null);
-  const enabledServices = [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition, AboutServiceDefinition];
+  const enabledServices = serviceList
 
   // Initialize scene only once
   useEffect(() => {
