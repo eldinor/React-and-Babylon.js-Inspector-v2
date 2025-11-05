@@ -9,7 +9,7 @@ const graphicsBudgetExtension = {
 
 const importGLBExtension = {
   name: "Import GLB",
-  description: "Provides a tool to import GLB files into the scene.",
+  description: "Provides a tool to import GLB files into the scene and then clone, instance and manipulate them.",
   keywords: ["import", "glb"],
   getExtensionModuleAsync: async () => import("../services/ImportGLBService"),
 };

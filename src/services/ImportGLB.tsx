@@ -7,7 +7,7 @@ import {  LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { Logger } from "@babylonjs/core/Misc/logger";
 import { FileUploadLine,  type ISelectionService,} from "@babylonjs/inspector";
 import { Delete16Regular, Copy16Regular, DocumentCopy16Regular } from "@fluentui/react-icons";
-import { Button, Tooltip } from "@fluentui/react-components";
+import { Button, Tooltip, Switch } from "@fluentui/react-components";
 
 interface CloneInstance {
   name: string;
@@ -25,6 +25,7 @@ interface LoadedFile {
 
 export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService: ISelectionService }> = ({ scene, selectionService }) => {
   const [loadedFiles, setLoadedFiles] = useState<LoadedFile[]>([]);
+  const [autoSelectModel, setAutoSelectModel] = useState<boolean>(true);
   const loadGLB = async (files: FileList) => {
     if (!files || files.length === 0) {
       Logger.Warn("No file selected");
@@ -53,8 +54,8 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
 
       Logger.Log(`Successfully loaded ${file.name}`);
 
-      // Select the first mesh from the loaded container
-      if (container.meshes.length > 0) {
+      // Select the first mesh from the loaded container (if auto-select is enabled)
+      if (autoSelectModel && container.meshes.length > 0) {
         selectionService.selectedEntity = container.meshes[0];
         Logger.Log(`Selected mesh: ${container.meshes[0].name}`);
       }
@@ -260,6 +261,13 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
           >
             Dispose All
           </Button>
+          <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <Switch
+              checked={autoSelectModel}
+              onChange={(e) => setAutoSelectModel(e.currentTarget.checked)}
+              label="Auto-select loaded model"
+            />
+          </div>
         </div>
       )}
     </div>
