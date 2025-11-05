@@ -7,4 +7,12 @@ const graphicsBudgetExtension = {
   getExtensionModuleAsync: async () => import("../services/graphicsBudgetService"),
 };
 
-export const extensionList = [new BuiltInsExtensionFeed("Graphics Budget", [graphicsBudgetExtension])];
+const importGLBExtension = {
+  name: "Import GLB",
+  description: "Provides a tool to import GLB files into the scene.",
+  keywords: ["import", "glb"],
+  getExtensionModuleAsync: async () => import("../services/ImportGLBService"),
+};
+
+export const extensionList = [new BuiltInsExtensionFeed("Graphics Budget", [graphicsBudgetExtension]),
+new BuiltInsExtensionFeed("Import GLB", [importGLBExtension])];
