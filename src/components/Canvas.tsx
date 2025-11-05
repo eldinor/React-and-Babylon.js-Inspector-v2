@@ -12,11 +12,12 @@ import {
 import "@babylonjs/loaders";
 import { ShowInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
 import { serviceList } from "../services/ServiceList";
+import { extensionList } from "../services/ExtensionList";
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<Scene | null>(null);
-  const enabledServices = serviceList
+  const enabledServices = serviceList;
 
   // Initialize scene only once
   useEffect(() => {
@@ -60,22 +61,12 @@ export function Canvas() {
     setTimeout(() => {
       ShowInspector(sceneRef.current!, {
         embedMode: false,
-      //  initialTab: 2,
-     //   showExplorer:false,
+        //  initialTab: 2,
+        //   showExplorer:false,
         enableClose: true,
         overlay: true,
         serviceDefinitions: enabledServices,
-        extensionFeeds: [
-          new BuiltInsExtensionFeed("Test Feed", [
-            {
-              name: "Graphics Budget",
-              description:
-                "Provides graphics budget settings and UI to surface warnings when the thresholds are exceeded.",
-              keywords: ["graphics", "budget"],
-              getExtensionModuleAsync: async () => import("../services/graphicsBudgetService"),
-            },
-          ]),
-        ],
+        extensionFeeds: [extensionList],
       });
     }, 100);
 

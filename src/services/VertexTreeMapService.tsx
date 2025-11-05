@@ -13,7 +13,6 @@ import { type FunctionComponent, useCallback, useMemo } from "react";
 import { DataTreemapRegular } from "@fluentui/react-icons";
 import ReactECharts from "echarts-for-react";
 
-
 export const VertexTreeMapServiceDefinition: ServiceDefinition<[], [IShellService, ISceneContext, ISelectionService]> =
   {
     friendlyName: "Vertex Tree Map",
