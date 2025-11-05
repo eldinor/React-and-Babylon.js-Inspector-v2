@@ -1,13 +1,18 @@
 import { useState } from "react";
 import type { FunctionComponent } from "react";
 import type { Scene } from "@babylonjs/core/scene";
+import type { AssetContainer } from "@babylonjs/core/assetContainer";
 import {  LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { Logger } from "@babylonjs/core/Misc/logger";
 import { FileUploadLine,  type ISelectionService,} from "@babylonjs/inspector";
+import { Delete16Regular, Delete24Regular } from "@fluentui/react-icons";
+import { Button } from "@fluentui/react-components";
 
 interface LoadedFile {
   name: string;
   size: number;
+  meshName: string;
+  container: AssetContainer;
 }
 
 export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService: ISelectionService }> = ({ scene, selectionService }) => {
@@ -34,7 +39,8 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
       Logger.Log(`Loading GLB file: ${file.name}`);
 
      const container = await LoadAssetContainerAsync(fileURL, scene, { pluginExtension: ".glb" });
-     container.meshes[0].name = file.name.substring(0, file.name.lastIndexOf("."));
+     const meshName = file.name.substring(0, file.name.lastIndexOf("."));
+     container.meshes[0].name = meshName;
      container.addAllToScene()
 
       Logger.Log(`Successfully loaded ${file.name}`);
@@ -46,7 +52,7 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
       }
 
       // Add to loaded files list
-      setLoadedFiles((prev) => [...prev, { name: file.name, size: file.size }]);
+      setLoadedFiles((prev) => [...prev, { name: file.name, size: file.size, meshName, container }]);
 
       // Auto-play animations if any
       /*
@@ -66,23 +72,82 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
     }
   };
 
+  const handleDelete = (index: number) => {
+    const fileToDelete = loadedFiles[index];
+
+    // Dispose the container
+    fileToDelete.container.dispose();
+    Logger.Log(`Disposed container: ${fileToDelete.name}`);
+
+    // Remove from the list
+    setLoadedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDisposeAll = () => {
+    // Dispose all containers
+    loadedFiles.forEach((file) => {
+      file.container.dispose();
+      Logger.Log(`Disposed container: ${file.name}`);
+    });
+
+    // Clear the list
+    setLoadedFiles([]);
+    Logger.Log("All containers disposed");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-      <FileUploadLine label="Load GLB File" accept=".glb,.gltf" onClick={(files: FileList) => loadGLB(files)} />
+      <FileUploadLine label="Load GLB File" accept=".glb" onClick={(files: FileList) => loadGLB(files)} />
 
       {loadedFiles.length > 0 && (
         <div style={{ marginTop: "8px" }}>
           <h4 style={{ margin: 0, marginBottom: "4px", fontSize: "14px", fontWeight: 600 }}>Loaded Files:</h4>
           <ul style={{ listStyleType: "none", paddingLeft: 0, margin: 0, marginTop: "4px" }}>
-            {loadedFiles.map((file, index) => (
-              <li key={index} style={{ padding: "4px 0", fontSize: "12px", display: "flex", flexDirection: "column" }}>
-                <span>• {file.name}</span>
-                <span style={{ fontSize: "11px", color: "#888", marginLeft: "12px" }}>
-                  {((file.size/1024)/1024).toFixed(2)+"MB"} 
-                </span>
-              </li>
-            ))}
+            {loadedFiles.map((file, index) => {
+              const handleClick = () => {
+                const mesh = scene.getMeshByName(file.meshName);
+                if (mesh) {
+                  selectionService.selectedEntity = mesh;
+                  Logger.Log(`Selected mesh: ${mesh.name}`);
+                }
+              };
+
+              return (
+                <li key={index} style={{ padding: "4px 0", fontSize: "12px", display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                    <span
+                      onClick={handleClick}
+                      style={{
+                        cursor: "pointer",
+                        color: "#0078d4",
+                        textDecoration: "underline"
+                      }}
+                    >
+                      • {file.name}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#888", marginLeft: "12px" }}>
+                      {((file.size/1024)/1024).toFixed(2)+"MB"}
+                    </span>
+                  </div>
+                  <Delete16Regular
+                    onClick={() => handleDelete(index)}
+                    style={{
+                      cursor: "pointer",
+                      color: "#d13438",
+                      flexShrink: 0
+                    }}
+                  />
+                </li>
+              );
+            })}
           </ul>
+          <Button
+            appearance="secondary"
+            onClick={handleDisposeAll}
+            style={{ marginTop: "8px", width: "100%" }}
+          >
+            Dispose All
+          </Button>
         </div>
       )}
     </div>

@@ -15,7 +15,7 @@ import { serviceList } from "../services/ServiceList";
 import { Tooltip } from "@fluentui/react-components";
 import { extensionList } from "./ExtensionList";
 export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, ISceneContext, ISelectionService]> = {
-  friendlyName: "About",
+  friendlyName: "Info",
   consumes: [ShellServiceIdentity, SceneContextIdentity, SelectionServiceIdentity],
   factory: (shellService, sceneContext) => {
     // Define the React component for the mesh vertices treemap
