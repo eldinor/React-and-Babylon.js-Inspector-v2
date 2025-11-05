@@ -1,16 +1,16 @@
 import type { ServiceDefinition } from "@babylonjs/inspector";
-import { ToolsServiceIdentity } from "@babylonjs/inspector";
-import type { IToolsService } from "@babylonjs/inspector";
-import { ImportGLBTools } from "./ImportGLB."; 
+import { ToolsServiceIdentity, SelectionServiceIdentity } from "@babylonjs/inspector";
+import type { IToolsService, ISelectionService } from "@babylonjs/inspector";
+import { ImportGLBTools } from "./ImportGLB.";
 
-export const GLBImportServiceDefinition: ServiceDefinition<[], [IToolsService]> = {
+export const GLBImportServiceDefinition: ServiceDefinition<[], [IToolsService, ISelectionService]> = {
     friendlyName: "Import GLB Tool",
-    consumes: [ToolsServiceIdentity],
-    factory: (toolsService) => {
+    consumes: [ToolsServiceIdentity, SelectionServiceIdentity],
+    factory: (toolsService, selectionService) => {
         const contentRegistration = toolsService.addSectionContent({
             key: "GLB Import",
             section: "GLB Import",
-            component: ({ context }) => <ImportGLBTools scene={context} />,
+            component: ({ context }) => <ImportGLBTools scene={context} selectionService={selectionService} />,
         });
 
         return {

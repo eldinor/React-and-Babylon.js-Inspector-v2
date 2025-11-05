@@ -10,7 +10,7 @@ interface LoadedFile {
   size: number;
 }
 
-export const ImportGLBTools: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
+export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService: ISelectionService }> = ({ scene, selectionService }) => {
   const [loadedFiles, setLoadedFiles] = useState<LoadedFile[]>([]);
   const loadGLB = async (files: FileList) => {
     if (!files || files.length === 0) {
@@ -21,8 +21,8 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene }> = ({ scene }) =
     const file = files[0];
 
     // Validate file type
-    if (!file.name.toLowerCase().endsWith(".glb") && !file.name.toLowerCase().endsWith(".gltf")) {
-      Logger.Error("Please select a valid GLB or GLTF file");
+    if (!file.name.toLowerCase().endsWith(".glb")) {
+      Logger.Error("Please select a valid GLB file");
       return;
     }
 
@@ -35,10 +35,14 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene }> = ({ scene }) =
 
      const container = await LoadAssetContainerAsync(fileURL, scene, { pluginExtension: ".glb" });
      container.addAllToScene()
-      
+
       Logger.Log(`Successfully loaded ${file.name}`);
 
-      console.log(file)
+      // Select the first mesh from the loaded container
+      if (container.meshes.length > 0) {
+        selectionService.selectedEntity = container.meshes[0];
+        Logger.Log(`Selected mesh: ${container.meshes[0].name}`);
+      }
 
       // Add to loaded files list
       setLoadedFiles((prev) => [...prev, { name: file.name, size: file.size }]);
