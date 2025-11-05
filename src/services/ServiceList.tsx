@@ -1,5 +1,5 @@
-import { AboutServiceDefinition } from "./AboutService";
+import { AboutServiceDefinition, InfoServiceDefinition } from "./InfoService";
 import { MemoryCounterServiceDefinition } from "./MemoryCounterToolbarService";
 import { VertexTreeMapServiceDefinition } from "./VertexTreeMapService";
 
-export const serviceList = [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition, AboutServiceDefinition];
+export const serviceList = [VertexTreeMapServiceDefinition, MemoryCounterServiceDefinition, InfoServiceDefinition];
