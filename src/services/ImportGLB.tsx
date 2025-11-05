@@ -130,8 +130,10 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
         return updated;
       });
 
-      // Select the first root node
-      selectionService.selectedEntity = rootNode;
+      // Select the first root node (if auto-select is enabled)
+      if (autoSelectModel) {
+        selectionService.selectedEntity = rootNode;
+      }
       Logger.Log(`Cloned container: ${file.name} as ${cloneName}`);
     }
   };
@@ -154,8 +156,10 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
         return updated;
       });
 
-      // Select the first root node
-      selectionService.selectedEntity = rootNode;
+      // Select the first root node (if auto-select is enabled)
+      if (autoSelectModel) {
+        selectionService.selectedEntity = rootNode;
+      }
       Logger.Log(`Instanced container: ${file.name} as ${instanceName}`);
     }
   };

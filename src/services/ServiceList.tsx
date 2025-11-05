@@ -1,4 +1,4 @@
-import { AboutServiceDefinition, InfoServiceDefinition } from "./InfoService";
+import { InfoServiceDefinition } from "./InfoService";
 import { MemoryCounterServiceDefinition } from "./MemoryCounterToolbarService";
 import { VertexTreeMapServiceDefinition } from "./VertexTreeMapService";
 

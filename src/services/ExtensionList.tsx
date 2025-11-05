@@ -16,3 +16,9 @@ const importGLBExtension = {
 
 export const extensionList = [new BuiltInsExtensionFeed("Graphics Budget", [graphicsBudgetExtension]),
 new BuiltInsExtensionFeed("Import GLB", [importGLBExtension])];
+
+// Export extension metadata for display purposes
+export const extensionMetadata = [
+  { name: "Graphics Budget", description: graphicsBudgetExtension.description },
+  { name: "Import GLB", description: importGLBExtension.description },
+];
