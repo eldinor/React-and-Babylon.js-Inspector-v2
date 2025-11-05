@@ -1,10 +1,17 @@
+import { useState } from "react";
 import type { FunctionComponent } from "react";
 import type { Scene } from "@babylonjs/core/scene";
-import { AppendSceneAsync } from "@babylonjs/core/Loading/sceneLoader";
+import {  LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { Logger } from "@babylonjs/core/Misc/logger";
-import { FileUploadLine } from "@babylonjs/inspector";
+import { FileUploadLine,  type ISelectionService,} from "@babylonjs/inspector";
+
+interface LoadedFile {
+  name: string;
+  size: number;
+}
 
 export const ImportGLBTools: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
+  const [loadedFiles, setLoadedFiles] = useState<LoadedFile[]>([]);
   const loadGLB = async (files: FileList) => {
     if (!files || files.length === 0) {
       Logger.Warn("No file selected");
@@ -26,9 +33,15 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene }> = ({ scene }) =
       // Load the GLB file
       Logger.Log(`Loading GLB file: ${file.name}`);
 
-      await AppendSceneAsync(fileURL, scene, { pluginExtension: ".glb" });
-
+     const container = await LoadAssetContainerAsync(fileURL, scene, { pluginExtension: ".glb" });
+     container.addAllToScene()
+      
       Logger.Log(`Successfully loaded ${file.name}`);
+
+      console.log(file)
+
+      // Add to loaded files list
+      setLoadedFiles((prev) => [...prev, { name: file.name, size: file.size }]);
 
       // Auto-play animations if any
       /*
@@ -48,5 +61,25 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene }> = ({ scene }) =
     }
   };
 
-  return <FileUploadLine label="Load GLB File" accept=".glb,.gltf" onClick={(files: FileList) => loadGLB(files)} />;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <FileUploadLine label="Load GLB File" accept=".glb,.gltf" onClick={(files: FileList) => loadGLB(files)} />
+
+      {loadedFiles.length > 0 && (
+        <div style={{ marginTop: "8px" }}>
+          <h4 style={{ margin: 0, marginBottom: "4px", fontSize: "14px", fontWeight: 600 }}>Loaded Files:</h4>
+          <ul style={{ listStyleType: "none", paddingLeft: 0, margin: 0, marginTop: "4px" }}>
+            {loadedFiles.map((file, index) => (
+              <li key={index} style={{ padding: "4px 0", fontSize: "12px", display: "flex", flexDirection: "column" }}>
+                <span>• {file.name}</span>
+                <span style={{ fontSize: "11px", color: "#888", marginLeft: "12px" }}>
+                  {((file.size/1024)/1024).toFixed(2)+"MB"} 
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 };

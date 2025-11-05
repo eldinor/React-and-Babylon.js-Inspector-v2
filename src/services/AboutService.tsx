@@ -22,8 +22,8 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
     const About: FunctionComponent<{ scene: Scene }> = ({ scene }) => {
       return (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "12px" }}>
-          <h3 style={{ marginTop: 0 }}>Inspector v2 ServiceDefinitions</h3>
-          <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
+          <h3 style={{ margin: 0 }}>Inspector v2 ServiceDefinitions</h3>
+          <ul style={{ listStyleType: "none", paddingLeft: 0, marginTop:"4px"}}>
             {serviceList.map((service, index) => (
               <li key={index} style={{ padding: "4px 0", display: "flex", alignItems: "center", gap: "8px" }}>
                 <span>• {service.friendlyName}</span>
@@ -33,8 +33,8 @@ export const AboutServiceDefinition: ServiceDefinition<[], [IShellService, IScen
               </li>
             ))}
           </ul>
-          <h3 style={{ marginTop: 0 }}>Inspector v2 ExtensionFeeds</h3>
-          <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
+          <h3 style={{ margin: 0 }}>Inspector v2 ExtensionFeeds</h3>
+          <ul style={{ listStyleType: "none", paddingLeft: 0 ,marginTop:"4px"}}>
             {extensionList.map((feed, index) => (
               <li key={index} style={{ padding: "4px 0", display: "flex", alignItems: "center", gap: "8px" }}>
                 <span>• {feed.name}</span>
