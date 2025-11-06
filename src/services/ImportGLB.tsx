@@ -130,8 +130,10 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
         return updated;
       });
 
-      // Select the first root node
-      selectionService.selectedEntity = rootNode;
+      // Select the first root node (if auto-select is enabled)
+      if (autoSelectModel) {
+        selectionService.selectedEntity = rootNode;
+      }
       Logger.Log(`Cloned container: ${file.name} as ${cloneName}`);
     }
   };
@@ -154,8 +156,10 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
         return updated;
       });
 
-      // Select the first root node
-      selectionService.selectedEntity = rootNode;
+      // Select the first root node (if auto-select is enabled)
+      if (autoSelectModel) {
+        selectionService.selectedEntity = rootNode;
+      }
       Logger.Log(`Instanced container: ${file.name} as ${instanceName}`);
     }
   };
@@ -206,7 +210,7 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                                 onClick={handleCloneClick}
                                 style={{
                                   cursor: "pointer",
-                                  color: clone.type === "clone" ? "#b8e007ff" : "#07fc07ff",
+                                  color: clone.type === "clone" ? "#8B7355" : "#13a10e",
                                   textDecoration: "underline"
                                 }}
                               >
@@ -224,7 +228,7 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                         onClick={() => handleClone(index)}
                         style={{
                           cursor: "pointer",
-                          color: "#0078d4",
+                          color: "#8B7355",
                           flexShrink: 0
                         }}
                       />
@@ -234,7 +238,7 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                         onClick={() => handleInstance(index)}
                         style={{
                           cursor: "pointer",
-                          color: "#107c10",
+                          color: "#13a10e",
                           flexShrink: 0
                         }}
                       />

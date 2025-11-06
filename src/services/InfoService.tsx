@@ -13,7 +13,9 @@ import { type FunctionComponent } from "react";
 import { Info16Regular, InfoRegular } from "@fluentui/react-icons";
 import { serviceList } from "./ServiceList";
 import { Tooltip } from "@fluentui/react-components";
-import { extensionList } from "./ExtensionList";
+import { extensionMetadata } from "./ExtensionList";
+
+
 export const InfoServiceDefinition: ServiceDefinition<[], [IShellService, ISceneContext, ISelectionService]> = {
   friendlyName: "Info",
   consumes: [ShellServiceIdentity, SceneContextIdentity, SelectionServiceIdentity],
@@ -35,10 +37,10 @@ export const InfoServiceDefinition: ServiceDefinition<[], [IShellService, IScene
           </ul>
           <h3 style={{ margin: 0 }}>Custom ExtensionFeeds</h3>
           <ul style={{ listStyleType: "none", paddingLeft: 0 ,marginTop:"4px"}}>
-            {extensionList.map((feed, index) => (
+            {extensionMetadata.map((extension, index) => (
               <li key={index} style={{ padding: "4px 0", display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>• {feed.name}</span>
-                <Tooltip content={feed._extensions[0].description} relationship="description">
+                <span>• {extension.name}</span>
+                <Tooltip content={extension.description} relationship="description">
                   <Info16Regular style={{ cursor: "help" }} />
                 </Tooltip>
               </li>
