@@ -228,13 +228,13 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                         onClick={() => handleClone(index)}
                         style={{
                           cursor: "pointer",
-                          color: "#8
+                          color: "#8B7355",
+                          flexShrink: 0
                         }}
                       />
                     </Tooltip>
                     <Tooltip content="Instance" relationship="label">
-                      <DocumentB7355",
-                          flexShrink: 0Copy16Regular
+                      <DocumentCopy16Regular
                         onClick={() => handleInstance(index)}
                         style={{
                           cursor: "pointer",
