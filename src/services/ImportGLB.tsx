@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FunctionComponent } from "react";
 import type { Scene } from "@babylonjs/core/scene";
 import type { AssetContainer } from "@babylonjs/core/assetContainer";
 import type { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+import type { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import {  LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { Logger } from "@babylonjs/core/Misc/logger";
 import { FileUploadLine,  type ISelectionService,} from "@babylonjs/inspector";
@@ -26,6 +27,49 @@ interface LoadedFile {
 export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService: ISelectionService }> = ({ scene, selectionService }) => {
   const [loadedFiles, setLoadedFiles] = useState<LoadedFile[]>([]);
   const [autoSelectModel, setAutoSelectModel] = useState<boolean>(true);
+
+  // Watch for disposal of loaded containers and clones/instances
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const observers: Array<{ node: AbstractMesh | TransformNode; observer: any }> = [];
+
+    loadedFiles.forEach((file, fileIndex) => {
+      // Watch the main container's first mesh for disposal
+      if (file.container.meshes.length > 0) {
+        const mainMesh = file.container.meshes[0];
+        const observer = mainMesh.onDisposeObservable.add(() => {
+          Logger.Log(`Container mesh disposed externally: ${file.name}`);
+          setLoadedFiles((prev) => prev.filter((_, i) => i !== fileIndex));
+        });
+        observers.push({ node: mainMesh, observer });
+      }
+
+      // Watch each clone/instance for disposal
+      file.clones.forEach((clone) => {
+        const cloneRootNode = clone.rootNode;
+        const observer = cloneRootNode.onDisposeObservable.add(() => {
+          Logger.Log(`${clone.type} disposed: ${clone.name}`);
+          setLoadedFiles((prev) => {
+            return prev.map((f) => ({
+              ...f,
+              clones: f.clones.filter((c) => c.rootNode !== cloneRootNode),
+            }));
+          });
+        });
+        observers.push({ node: cloneRootNode, observer });
+      });
+    });
+
+    // Cleanup observers when component unmounts or loadedFiles changes
+    return () => {
+      observers.forEach(({ node, observer }) => {
+        if (node.onDisposeObservable && observer) {
+          node.onDisposeObservable.remove(observer);
+        }
+      });
+    };
+  }, [loadedFiles]);
+
   const loadGLB = async (files: FileList) => {
     if (!files || files.length === 0) {
       Logger.Warn("No file selected");
@@ -95,10 +139,10 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
   const handleDisposeAll = () => {
     // Dispose all containers and their clones/instances
     loadedFiles.forEach((file) => {
-      // Dispose all clones and instances first
+      // Dispose all clones and instances first (preserve materials)
       file.clones.forEach((clone) => {
         // Dispose the root node and all its children recursively
-        clone.rootNode.dispose(false, true);
+        clone.rootNode.dispose(false, false);
         Logger.Log(`Disposed ${clone.type}: ${clone.name}`);
       });
 
@@ -204,8 +248,15 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                             Logger.Log(`Selected ${clone.type}: ${clone.name}`);
                           };
 
+                          const handleCloneDispose = () => {
+                            // Dispose the clone/instance (preserve materials)
+                            // The onDisposeObservable will automatically remove it from the list
+                            clone.rootNode.dispose(false, false);
+                            Logger.Log(`Disposed ${clone.type}: ${clone.name}`);
+                          };
+
                           return (
-                            <div key={cloneIndex} style={{ fontSize: "11px", marginTop: "2px" }}>
+                            <div key={cloneIndex} style={{ fontSize: "11px", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
                               <span
                                 onClick={handleCloneClick}
                                 style={{
@@ -216,6 +267,12 @@ export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService:
                               >
                                 ↳ {clone.name}
                               </span>
+                              <Tooltip content="Delete" relationship="label">
+                                <Delete16Regular
+                                  onClick={handleCloneDispose}
+                                  style={{ cursor: "pointer", color: "#d13438" }}
+                                />
+                              </Tooltip>
                             </div>
                           );
                         })}
