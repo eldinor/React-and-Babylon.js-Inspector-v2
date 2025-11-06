@@ -1,68 +1,76 @@
-import { useEffect, useRef } from "react";
-import {
-  Engine,
-  Scene,
-  LoadAssetContainerAsync,
-  HemisphericLight,
-  Vector3,
-  MeshBuilder,
-  ArcRotateCamera,
-  Tools,
-} from "@babylonjs/core";
+import { useEffect, useRef, useState } from "react";
+import { Engine, Scene } from "@babylonjs/core";
 import "@babylonjs/loaders";
-import { ShowInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
+import { ShowInspector } from "@babylonjs/inspector";
 import { serviceList } from "../services/ServiceList";
 import { extensionList } from "../services/ExtensionList";
+import { createScene1 } from "../scenes/scene1";
+import { createScene2 } from "../scenes/scene2";
+import { createScene3 } from "../scenes/scene3";
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<Scene | null>(null);
-  const enabledServices = serviceList
+  const engineRef = useRef<Engine | null>(null);
+  const [currentScene, setCurrentScene] = useState<number>(2);
+  const enabledServices = serviceList;
 
-  // Initialize scene only once
+  // Load scene content based on scene number
+  const loadSceneContent = async (sceneNumber: number, scene: Scene) => {
+    // Dispose all meshes, lights, and cameras from the previous scene
+    scene.meshes.slice().forEach((mesh) => mesh.dispose());
+    scene.lights.slice().forEach((light) => light.dispose());
+    scene.cameras.slice().forEach((camera) => camera.dispose());
+
+    // Load the selected scene
+    switch (sceneNumber) {
+      case 1:
+        await createScene1(scene);
+        break;
+      case 2:
+        await createScene2(scene);
+        break;
+      case 3:
+        await createScene3(scene);
+        break;
+    }
+
+    // Attach the active camera to the canvas
+    if (scene.activeCamera && canvasRef.current) {
+      scene.activeCamera.attachControl(canvasRef.current, true);
+    }
+  };
+
+  // Handle loading empty scene
+  const loadEmptyScene = () => {
+    if (sceneRef.current && currentScene !== 3) {
+      setCurrentScene(3);
+      loadSceneContent(3, sceneRef.current);
+    }
+  };
+
+  // Initialize engine and scene only once
   useEffect(() => {
     if (!canvasRef.current) return;
 
     // Create Babylon.js engine
     const engine = new Engine(canvasRef.current, true);
+    engineRef.current = engine;
 
     // Create scene
     const scene = new Scene(engine);
     sceneRef.current = scene;
-    // scene.clearColor.set(0.1, 0.1, 0.1, 1);
 
-    // Create default camera and light
-    const camera = new ArcRotateCamera("camera", Tools.ToRadians(60), Tools.ToRadians(57.3), 10, Vector3.Zero(), scene);
-    camera.attachControl(canvasRef.current, true);
-    camera.setTarget(Vector3.Zero());
-    camera.wheelDeltaPercentage = 0.01;
+    // Expose loadEmptyScene to window for the toolbar button
+    (window as any).__loadEmptyScene = loadEmptyScene;
 
-    // Add a hemispheric light
-    const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-    light.intensity = 0.7;
-
-    // Create a simple box mesh
-    const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
-    box.position.x = -2;
-    box.position.y = 1;
-
-    // Create a ground plane
-    MeshBuilder.CreateGround("ground", { width: 5, height: 5 }, scene);
-
-    const testAsset = "https://assets.babylonjs.com/meshes/alien.glb";
-
-    (async () => {
-      const assetContainer = await LoadAssetContainerAsync(testAsset, scene);
-      assetContainer.addAllToScene();
-      assetContainer.meshes[0].position.y = 1;
-    })();
+    // Load initial scene (camera will be created by the scene)
+    loadSceneContent(currentScene, scene);
 
     // Defer Inspector update to avoid race condition during render
     setTimeout(() => {
       ShowInspector(sceneRef.current!, {
         embedMode: false,
-      //  initialTab: 2,
-     //   showExplorer:false,
         enableClose: true,
         overlay: true,
         serviceDefinitions: enabledServices,
