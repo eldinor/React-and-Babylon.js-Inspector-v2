@@ -1,3 +1,33 @@
+/**
+ * ImportGLB Service - Advanced GLB Model Management for Babylon.js Inspector
+ *
+ * This service provides comprehensive GLB file management capabilities:
+ *
+ * FEATURES:
+ * - Load GLB files into AssetContainers for efficient memory management
+ * - Create clones (independent geometry copies) and instances (shared geometry) from loaded models
+ * - Individual disposal of models, clones, and instances with material preservation
+ * - Automatic synchronization with Scene Explorer when models are disposed externally
+ * - Quick selection of loaded models and their derivatives in the Inspector
+ * - Auto-select toggle to control whether loaded/created models are automatically selected
+ * - Batch disposal with "Dispose All" button
+ *
+ * USAGE:
+ * - Click file names to select the model in the Inspector
+ * - Use Clone icon (brown) to create independent copies with separate geometry
+ * - Use Instance icon (green) to create lightweight instances sharing geometry
+ * - Click Delete icons to remove individual models, clones, or instances
+ * - Toggle "Auto-select loaded model" to control automatic selection behavior
+ * - Use "Dispose All" to clean up all loaded models and their derivatives
+ *
+ * TECHNICAL NOTES:
+ * - Models are loaded into AssetContainers for better resource management
+ * - Clones use doNotInstantiate: true (independent geometry, higher memory usage)
+ * - Instances use doNotInstantiate: false (shared geometry, lower memory usage)
+ * - Materials are preserved when disposing clones/instances to avoid breaking shared resources
+ * - onDisposeObservable watchers ensure UI stays synchronized with scene state
+ */
+
 import { useState, useEffect } from "react";
 import type { FunctionComponent } from "react";
 import type { Scene } from "@babylonjs/core/scene";
