@@ -8,6 +8,7 @@ import {
   MeshBuilder,
   ArcRotateCamera,
   Tools,
+  CubeTexture,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
 import { ShowInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
@@ -17,7 +18,7 @@ import { extensionList } from "../services/ExtensionList";
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<Scene | null>(null);
-  const enabledServices = serviceList
+  const enabledServices = serviceList;
 
   // Initialize scene only once
   useEffect(() => {
@@ -40,7 +41,9 @@ export function Canvas() {
     // Add a hemispheric light
     const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
     light.intensity = 0.7;
-
+    // --- Environment Reflection ---
+    const hdrTexture = new CubeTexture("/environmentSpecular.env", scene);
+    scene.environmentTexture = hdrTexture;
     // Create a simple box mesh
     const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
     box.position.x = -2;
@@ -61,8 +64,8 @@ export function Canvas() {
     setTimeout(() => {
       ShowInspector(sceneRef.current!, {
         embedMode: false,
-      //  initialTab: 2,
-     //   showExplorer:false,
+        //  initialTab: 2,
+        //   showExplorer:false,
         enableClose: true,
         overlay: true,
         serviceDefinitions: enabledServices,
