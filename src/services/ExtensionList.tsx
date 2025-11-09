@@ -35,10 +35,19 @@ const disposeByTypeExtension = {
   getExtensionModuleAsync: async () => import("../services/DisposeByTypeService"),
 };
 
+const captureToolbarExtension = {
+  name: "Capture Toolbar",
+  description: "Provides a capture button in the toolbar to take screenshots with save and delete options.",
+  keywords: ["capture", "screenshot", "toolbar", "image"],
+  ...BabylonPressResources,
+  getExtensionModuleAsync: async () => import("../services/CaptureToolbarService"),
+};
+
 export const extensionList = [
   new BuiltInsExtensionFeed(graphicsBudgetExtension.name, [graphicsBudgetExtension]),
   new BuiltInsExtensionFeed(importGLBExtension.name, [importGLBExtension]),
   new BuiltInsExtensionFeed(disposeByTypeExtension.name, [disposeByTypeExtension]),
+  new BuiltInsExtensionFeed(captureToolbarExtension.name, [captureToolbarExtension]),
 ];
 
 // Export extension metadata for display purposes
@@ -47,4 +56,5 @@ export const extensionMetadata = [
   { name: graphicsBudgetExtension.name, description: graphicsBudgetExtension.description },
   { name: importGLBExtension.name, description: importGLBExtension.description },
   { name: disposeByTypeExtension.name, description: disposeByTypeExtension.description },
+  { name: captureToolbarExtension.name, description: captureToolbarExtension.description },
 ];
