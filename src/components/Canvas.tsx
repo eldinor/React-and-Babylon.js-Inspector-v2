@@ -30,7 +30,10 @@ export function Canvas() {
     if (!canvasRef.current) return;
 
     // Create Babylon.js engine
-    const engine = new Engine(canvasRef.current, true);
+    const engine = new Engine(canvasRef.current, true, {
+      adaptToDeviceRatio: true,
+      antialias: true,
+    });
 
     // Create scene
     const scene = new Scene(engine);
@@ -55,8 +58,13 @@ export function Canvas() {
     box.position.x = -2;
     box.position.y = 1;
 
-    const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2, segments: 32 }, scene);
+    const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 1.5, segments: 32 }, scene);
     sphere.position.y = 1;
+    sphere.position.z = -2;
+
+    const capsule = MeshBuilder.CreateCapsule("capsule", { height: 2, radius: 0.5, tessellation: 16 }, scene);
+    capsule.position.y = 1;
+    capsule.position.x = 2;
 
     // Create a ground plane
     const ground = MeshBuilder.CreateGround("ground", { width: 15, height: 15 }, scene);
@@ -67,17 +75,26 @@ export function Canvas() {
       const assetContainer = await LoadAssetContainerAsync(testAsset, scene);
       assetContainer.addAllToScene();
       assetContainer.meshes[0].position.y = 1;
+      assetContainer.meshes[0].scaling.scaleInPlace(5);
+      assetContainer.animationGroups[0].stop();
+      assetContainer.animationGroups[2].play(true);
+
       const bmat = new PBRMaterial("bm");
       bmat.albedoColor = Color3.Red();
       bmat.roughness = 0.25;
       bmat.metallic = 1.0;
       box.material = bmat;
+
       const spmat = new PBRMaterial("spmat", scene);
-      //
       spmat.roughness = 0.25;
       spmat.metallic = 1.0;
-
       sphere.material = spmat;
+
+      const capmat = new PBRMaterial("capmat", scene);
+      capmat.roughness = 0.25;
+      capmat.metallic = 1.0;
+      capmat.albedoColor = Color3.Blue();
+      capsule.material = capmat;
 
       const grmat = new PBRMaterial("grmat", scene);
       grmat.roughness = 0.1;
@@ -90,7 +107,10 @@ export function Canvas() {
       probe.renderList!.push(box);
       probe.renderList!.push(skybox as Mesh);
 
-      probe.attachToMesh(sphere)
+      console.log(scene.getMeshByName("aerobatic_plane.2"));
+      probe.renderList!.push(scene.getMeshByName("aerobatic_plane.2") as Mesh);
+
+      //  probe.attachToMesh(sphere)
 
       spmat.reflectionTexture = probe.cubeTexture;
       grmat.reflectionTexture = probe.cubeTexture;
@@ -98,10 +118,9 @@ export function Canvas() {
       console.log(scene.reflectionProbes);
       console.log(scene.reflectionProbes[0].renderList);
 
-          scene.registerBeforeRender(function () {
+      scene.registerBeforeRender(function () {
         box.rotation.y += 0.01;
-    
-    });
+      });
     })();
 
     // Defer Inspector update to avoid race condition during render
