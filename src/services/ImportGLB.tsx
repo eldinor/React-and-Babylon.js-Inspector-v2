@@ -56,7 +56,17 @@ interface LoadedFile {
 
 export const ImportGLBTools: FunctionComponent<{ scene: Scene; selectionService: ISelectionService }> = ({ scene, selectionService }) => {
   const [loadedFiles, setLoadedFiles] = useState<LoadedFile[]>([]);
-  const [autoSelectModel, setAutoSelectModel] = useState<boolean>(true);
+
+  // Load auto-select setting from localStorage, default to true
+  const [autoSelectModel, setAutoSelectModel] = useState<boolean>(() => {
+    const saved = localStorage.getItem("importGLB_autoSelectModel");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  // Save auto-select setting to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("importGLB_autoSelectModel", JSON.stringify(autoSelectModel));
+  }, [autoSelectModel]);
 
   // Watch for disposal of loaded containers and clones/instances
   useEffect(() => {

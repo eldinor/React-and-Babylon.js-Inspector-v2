@@ -6,8 +6,8 @@ export const DisposeByTypeServiceDefinition: ServiceDefinition<[], [IToolsServic
     consumes: [ToolsServiceIdentity, SelectionServiceIdentity],
     factory: (toolsService, selectionService) => {
         const contentRegistration = toolsService.addSectionContent({
-            key: "Dispose By Type",
-            section: "Dispose By Type",
+            key: "Dispose By Type [Experimental]",
+            section: "Dispose By Type [Experimental]",
             component: ({ context }) => <DisposeByTypeTools scene={context} selectionService={selectionService} />,
         });
 

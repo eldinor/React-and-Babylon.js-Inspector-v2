@@ -250,21 +250,11 @@ export function DisposeByTypeTools({ scene }: DisposeByTypeToolsProps) {
 
       for (const group of scene.animationGroups) {
         group.stop();
-        console.log(group);
         group.dispose();
-
-        console.log(group);
-        // Manually remove from scene array if still present
-        const index = scene.animationGroups.indexOf(group);
-        if (index > -1) {
-          console.log(group);
-          scene.animationGroups.splice(index, 1);
-          console.log(scene.animationGroups);
-        }
-      }
+      
       disposedCount += count;
+      }
       disposedTypes.push(`${count} animation group(s)`);
-      console.log(scene.animationGroups);
     }
 
     if (checked.postProcesses && scene.postProcesses.length > 0) {
@@ -298,7 +288,7 @@ export function DisposeByTypeTools({ scene }: DisposeByTypeToolsProps) {
     // Clear message after 2 seconds
     setTimeout(() => {
       setDisposalMessage("");
-    }, 2000);
+    }, 3000);
   };
 
   return (

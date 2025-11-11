@@ -9,6 +9,11 @@ import {
   ArcRotateCamera,
   Tools,
   CubeTexture,
+  PBRMaterial,
+  ReflectionProbe,
+  Mesh,
+  GroundMesh,
+  Color3,
 } from "@babylonjs/core";
 import "@babylonjs/loaders";
 import { ShowInspector, BuiltInsExtensionFeed } from "@babylonjs/inspector";
@@ -44,20 +49,59 @@ export function Canvas() {
     // --- Environment Reflection ---
     const hdrTexture = new CubeTexture("/environmentSpecular.env", scene);
     scene.environmentTexture = hdrTexture;
+
     // Create a simple box mesh
     const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
     box.position.x = -2;
     box.position.y = 1;
 
-    // Create a ground plane
-    MeshBuilder.CreateGround("ground", { width: 5, height: 5 }, scene);
+    const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2, segments: 32 }, scene);
+    sphere.position.y = 1;
 
-    const testAsset = "https://assets.babylonjs.com/meshes/alien.glb";
+    // Create a ground plane
+    const ground = MeshBuilder.CreateGround("ground", { width: 15, height: 15 }, scene);
+
+    const testAsset = "https://assets.babylonjs.com/meshes/Demos/optimized/acrobaticPlane_variants.glb";
 
     (async () => {
       const assetContainer = await LoadAssetContainerAsync(testAsset, scene);
       assetContainer.addAllToScene();
       assetContainer.meshes[0].position.y = 1;
+      const bmat = new PBRMaterial("bm");
+      bmat.albedoColor = Color3.Red();
+      bmat.roughness = 0.25;
+      bmat.metallic = 1.0;
+      box.material = bmat;
+      const spmat = new PBRMaterial("spmat", scene);
+      //
+      spmat.roughness = 0.25;
+      spmat.metallic = 1.0;
+
+      sphere.material = spmat;
+
+      const grmat = new PBRMaterial("grmat", scene);
+      grmat.roughness = 0.1;
+      grmat.metallic = 0.9;
+      ground.material = grmat;
+
+      const skybox = scene.createDefaultSkybox(hdrTexture, true, 10000, 0.5);
+
+      const probe = new ReflectionProbe("main", 512, scene);
+      probe.renderList!.push(box);
+      probe.renderList!.push(skybox as Mesh);
+
+      probe.attachToMesh(sphere)
+
+      spmat.reflectionTexture = probe.cubeTexture;
+      grmat.reflectionTexture = probe.cubeTexture;
+
+      console.log(scene.reflectionProbes);
+      console.log(scene.reflectionProbes[0].renderList);
+
+          scene.registerBeforeRender(function () {
+        box.rotation.y += 0.01;
+    
+    });
     })();
 
     // Defer Inspector update to avoid race condition during render
