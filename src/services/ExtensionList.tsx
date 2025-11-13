@@ -1,4 +1,4 @@
-import { BuiltInsExtensionFeed, ExtensionMetadata } from "@babylonjs/inspector";
+import { BuiltInExtension, BuiltInsExtensionFeed, ExtensionMetadata } from "@babylonjs/inspector";
 
 const BabylonPressResources = {
   homepage: "https://inspector.babylonpress.org/",
@@ -28,7 +28,7 @@ const importGLBExtension = {
 };
 
 const disposeByTypeExtension = {
-  name: "Dispose By Type",
+  name: "Dispose By Type [Experimental]",
   description: "Provides a tool to dispose scene objects by type (lights, meshes, materials, textures, etc.) with batch selection.",
   keywords: ["dispose", "cleanup", "tools", "batch"],
   ...BabylonPressResources,
@@ -43,18 +43,26 @@ const captureToolbarExtension = {
   getExtensionModuleAsync: async () => import("../services/CaptureToolbarService"),
 };
 
-export const extensionList = [
-  new BuiltInsExtensionFeed(graphicsBudgetExtension.name, [graphicsBudgetExtension]),
-  new BuiltInsExtensionFeed(importGLBExtension.name, [importGLBExtension]),
-  new BuiltInsExtensionFeed(disposeByTypeExtension.name, [disposeByTypeExtension]),
-  new BuiltInsExtensionFeed(captureToolbarExtension.name, [captureToolbarExtension]),
-];
+  const extensions = [
+    graphicsBudgetExtension,
+    importGLBExtension,
+    disposeByTypeExtension,
+    captureToolbarExtension
+  ];
 
-// Export extension metadata for display purposes
-// TODO: Convert to function
-export const extensionMetadata = [
-  { name: graphicsBudgetExtension.name, description: graphicsBudgetExtension.description },
-  { name: importGLBExtension.name, description: importGLBExtension.description },
-  { name: disposeByTypeExtension.name, description: disposeByTypeExtension.description },
-  { name: captureToolbarExtension.name, description: captureToolbarExtension.description },
-];
+const getExtensionList  = (extensions) => {
+  return extensions.map((extension: BuiltInExtension) => {
+    return new BuiltInsExtensionFeed(extension.name, [extension])
+  })
+}
+
+// BuiltInsExtensionFeed has the feed descriptions private. This function populates the new object to use in InfoService.
+const getExtensionMetadata = (extensions) => {
+  return extensions.map(extension => ({
+    name: extension.name,
+    description: extension.description
+  }));
+};
+
+export const extensionList = getExtensionList(extensions)
+export const extensionMetadata = getExtensionMetadata(extensions);
