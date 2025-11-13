@@ -33,9 +33,30 @@ This project demonstrates how to extend the Babylon.js Inspector v2 with custom 
    - Opens in new tab
 
 4. **Info Service** - Documentation panel
+
    - Lists all custom ServiceDefinitions
    - Lists all custom ExtensionFeeds
    - Tooltips with descriptions
+
+5. **Reflection Probes** - Scene Explorer integration for Reflection Probes
+
+   - Adds "Reflection Probes" section to Scene Explorer
+   - Properties pane with four sections:
+     - **Meshes in Probe Renderlist** - View and manage meshes in the probe's renderList
+     - **Add Mesh** - Add available meshes to the renderList (with geometry/PBR material filtering)
+     - **Materials Reflected This Probe** - View materials using the probe's cubeTexture
+     - **Add Material** - Assign probe's cubeTexture to available PBR materials
+   - Add/Remove icons for easy management
+   - Auto-refresh on changes
+   - Smart filtering to prevent conflicts
+
+6. **Capture Toolbar** - Screenshot capture tool
+
+   - Bottom toolbar capture button
+   - Take screenshots of the current scene
+   - Save screenshots to disk
+   - Delete captured screenshots
+   - Preview captured images
 
 ### Custom ExtensionFeeds
 
@@ -47,6 +68,7 @@ This project demonstrates how to extend the Babylon.js Inspector v2 with custom 
    - Real-time draw call counter
 
 2. **Import GLB** - Advanced GLB model management
+
    - Load GLB files into AssetContainers
    - Create clones (independent geometry) and instances (shared geometry)
    - Individual disposal with material preservation
@@ -54,6 +76,19 @@ This project demonstrates how to extend the Babylon.js Inspector v2 with custom 
    - Quick selection of models and derivatives
    - Auto-select toggle
    - Batch disposal with "Dispose All"
+
+3. **Dispose By Type [Experimental]** - Batch disposal tool
+
+   - Dispose scene objects by type (lights, meshes, materials, textures, etc.)
+   - Batch selection with checkboxes
+   - Preview before disposal
+   - Organized by object type
+   - Quick cleanup for large scenes
+
+4. **Capture Toolbar** - Screenshot capture extension
+   - Integrated with Capture Toolbar service
+   - Provides screenshot functionality
+   - Save and delete options
 
 ## 🛠️ Tech Stack
 
@@ -116,21 +151,25 @@ npm run lint
 ```
 src/
 ├── components/
-│   └── Canvas.tsx          # Main Babylon.js canvas component
+│   └── Canvas.tsx                      # Main Babylon.js canvas component
 ├── services/
-│   ├── ServiceList.tsx     # Registry of custom ServiceDefinitions
-│   ├── ExtensionList.tsx   # Registry of custom ExtensionFeeds
-│   ├── VertexTreeMapService.tsx
-│   ├── MemoryCounterToolbarService.tsx
-│   ├── LogoService.tsx
-│   ├── InfoService.tsx
-│   ├── graphicsBudgetService.tsx
-│   ├── ImportGLB.tsx       # GLB import tool component
-│   └── ImportGLBService.tsx
+│   ├── ServiceList.tsx                 # Registry of custom ServiceDefinitions
+│   ├── ExtensionList.tsx               # Registry of custom ExtensionFeeds
+│   ├── VertexTreeMapService.tsx        # Vertex treemap visualization
+│   ├── MemoryCounterToolbarService.tsx # Memory usage monitor
+│   ├── LogoService.tsx                 # BabylonPress logo
+│   ├── InfoService.tsx                 # Documentation panel
+│   ├── ProbeService.tsx                # Reflection Probes integration
+│   ├── CaptureToolbarService.tsx       # Screenshot capture service
+│   ├── graphicsBudgetService.tsx       # Graphics budget extension
+│   ├── ImportGLB.tsx                   # GLB import tool component
+│   ├── ImportGLBService.tsx            # GLB import extension
+│   ├── DisposeByType.tsx               # Dispose by type tool component
+│   └── DisposeByTypeService.tsx        # Dispose by type extension
 ├── App.tsx
 └── main.tsx
 public/
-└── bplogo.svg              # BabylonPress logo
+└── bplogo.svg                          # BabylonPress logo
 ```
 
 ## 🎯 Usage Examples
@@ -158,6 +197,37 @@ public/
 2. View interactive treemap of mesh vertex counts
 3. Click on any mesh block to select it in the Inspector
 4. Visualization updates automatically when meshes change
+
+### Reflection Probes
+
+1. Expand "Reflection Probes" section in Scene Explorer
+2. Click on a probe to view its properties
+3. **Meshes in Probe Renderlist** - View meshes currently rendered by the probe
+   - Click the red delete icon to remove a mesh from the renderList
+4. **Add Mesh** - Add meshes to the probe's renderList
+   - Only shows meshes with geometry or PBR materials
+   - Click the add icon to add a mesh
+5. **Materials Reflected This Probe** - View materials using this probe
+   - Shows bound meshes under each material
+   - Click the red delete icon to remove the probe from a material
+6. **Add Material** - Assign the probe to available materials
+   - Only shows PBR materials not already using this probe
+   - Click the add icon to assign the probe
+
+### Dispose By Type
+
+1. Open the "Dispose By Type [Experimental]" tool
+2. Select object type (Lights, Meshes, Materials, Textures, etc.)
+3. Check items you want to dispose
+4. Click "Dispose Selected" to remove them from the scene
+5. Use for quick cleanup of large scenes
+
+### Capture Toolbar
+
+1. Click the "Capture" button in the bottom toolbar
+2. Screenshot is captured and displayed
+3. Click "Save" to download the screenshot
+4. Click "Delete" to discard the screenshot
 
 ## 🔧 Customization
 

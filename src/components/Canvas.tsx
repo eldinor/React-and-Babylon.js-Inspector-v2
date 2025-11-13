@@ -46,32 +46,32 @@ export function Canvas() {
     camera.setTarget(Vector3.Zero());
     camera.wheelDeltaPercentage = 0.01;
 
-    // Add a hemispheric light
-    const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-    light.intensity = 0.7;
-    // --- Environment Reflection ---
-    const hdrTexture = new CubeTexture("/environmentSpecular.env", scene);
-    scene.environmentTexture = hdrTexture;
-
-    // Create a simple box mesh
-    const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
-    box.position.x = -2;
-    box.position.y = 1;
-
-    const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 1.5, segments: 32 }, scene);
-    sphere.position.y = 1;
-    sphere.position.z = -2;
-
-    const capsule = MeshBuilder.CreateCapsule("capsule", { height: 2, radius: 0.5, tessellation: 16 }, scene);
-    capsule.position.y = 1;
-    capsule.position.x = 2;
-
-    // Create a ground plane
-    const ground = MeshBuilder.CreateGround("ground", { width: 15, height: 15 }, scene);
-
-    const testAsset = "https://assets.babylonjs.com/meshes/Demos/optimized/acrobaticPlane_variants.glb";
-
     (async () => {
+      // Add a hemispheric light
+      const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
+      light.intensity = 0.7;
+      // --- Environment Reflection ---
+      const hdrTexture = new CubeTexture("/environmentSpecular.env", scene);
+      scene.environmentTexture = hdrTexture;
+
+      // Create a simple box mesh
+      const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
+      box.position.x = -2;
+      box.position.y = 1;
+
+      const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 1.5, segments: 32 }, scene);
+      sphere.position.y = 1;
+      sphere.position.z = -2;
+
+      const capsule = MeshBuilder.CreateCapsule("capsule", { height: 2, radius: 0.5, tessellation: 16 }, scene);
+      capsule.position.y = 1;
+      capsule.position.x = 2;
+
+      // Create a ground plane
+      const ground = MeshBuilder.CreateGround("ground", { width: 15, height: 15 }, scene);
+
+      const testAsset = "https://assets.babylonjs.com/meshes/Demos/optimized/acrobaticPlane_variants.glb";
+
       const assetContainer = await LoadAssetContainerAsync(testAsset, scene);
       assetContainer.addAllToScene();
       assetContainer.meshes[0].position.y = 1;
